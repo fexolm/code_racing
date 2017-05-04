@@ -6,13 +6,17 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk {
         private readonly RemoteProcessClient remoteProcessClient;
         private readonly string token;
 
-        //public static void Main(string[] args) {
-        //    if (args.Length == 3) {
-        //        new Runner(args).run();
-        //    } else {
-        //        new Runner(new[] { "127.0.0.1", "31001", "0000000000000000" }).run();
-        //    }
-        //}
+        public static void Main(string[] args)
+        {
+            if (args.Length == 3)
+            {
+                new Runner(args).run();
+            }
+            else
+            {
+                new Runner(new[] { "127.0.0.1", "31001", "0000000000000000" }).run();
+            }
+        }
 
         private Runner(string[] args) {
             remoteProcessClient = new RemoteProcessClient(args[0], int.Parse(args[1]));

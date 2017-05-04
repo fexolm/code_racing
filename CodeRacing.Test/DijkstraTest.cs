@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CodeRacing;
+using NUnit.Framework;
 
-namespace CodeRacing
+namespace CodeRacing.Test
 {
-    class TestMain
+    class DijkstraTest
     {
-        static void Main()
+        [Test]
+        public void Test1()
         {
             WaypointNode[] waypoints = new WaypointNode[13];
-            for(int i = 0; i< 13; i++)
+            for (int i = 0; i < 13; i++)
             {
                 waypoints[i] = new WaypointNode();
             }
@@ -43,8 +46,21 @@ namespace CodeRacing
             waypoints[12].ULeft = waypoints[10];
             waypoints[12].URight = waypoints[8];
 
-            Console.WriteLine(new WaypointDistance().FindWay(waypoints[0], waypoints[7]).Count());
-            Console.ReadKey();
+            var wp = new WaypointDistance().FindWay(waypoints[0], waypoints[7]);
+            var res = new List<int>();
+            var realResult = new int[] { 0, 10, 6, 1, 7 };
+            foreach (var element in wp)
+            {
+                for (int i = 0; i < 13; i++)
+                {
+                    if (waypoints[i] == element)
+                        res.Add(i);
+                }
+            }
+            for (int i = 0; i < realResult.Length; i++)
+            {
+                Assert.AreEqual(realResult[i], res[i]);
+            }
         }
     }
 }

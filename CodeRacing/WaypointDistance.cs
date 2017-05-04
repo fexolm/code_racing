@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeRacing
 {
-    class WaypointNode
+    public class WaypointNode
     {
         public WaypointNode()
         {
@@ -25,7 +25,7 @@ namespace CodeRacing
         public static readonly double TurnLen = Math.Sqrt(2);
     }
 
-    class WaypointDistance
+    public class WaypointDistance
     {
         private void CalcWeights(WaypointNode p1, WaypointNode p2)
         {
