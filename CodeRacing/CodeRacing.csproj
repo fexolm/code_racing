@@ -53,14 +53,14 @@
     <Compile Include="WaypointDistance.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\Desktop\csharp-cgdk\csharp-cgdk.csproj">
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\csharp-cgdk\csharp-cgdk.csproj">
       <Project>{9c830e12-33c9-429b-914e-bbdaa478d495}</Project>
       <Name>csharp-cgdk</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
