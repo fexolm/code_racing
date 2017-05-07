@@ -19,9 +19,9 @@ namespace CodeRacing
         public static readonly double TurnLen = Math.Sqrt(2);
     }
 
-    public class WaypointDistance
+    public static class DijkstraAlgorithm
     {
-        private void CalcWeights(WaypointNode p1, WaypointNode p2)
+        private static void CalcWeights(WaypointNode p1, WaypointNode p2)
         {
             if (p1 == p2)
                 return;
@@ -34,12 +34,12 @@ namespace CodeRacing
                 }
             }
         }
-        private WaypointNode GetNearestNeighbour(WaypointNode p)
+        private static WaypointNode GetNearestNeighbour(WaypointNode p)
         {
             double min = p.Ways.Min(w => w.node.Weight);
             return p.Ways.FirstOrDefault(w => w.node.Weight == min).node;
         }
-        public List<WaypointNode> FindWay(WaypointNode p1, WaypointNode p2)
+        public static List<WaypointNode> FindWay(WaypointNode p1, WaypointNode p2)
         {
             CalcWeights(p1, p2);
             var result = new List<WaypointNode>();

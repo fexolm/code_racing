@@ -46,7 +46,7 @@ namespace CodeRacing.Test
             waypoints[12].Ways.Add((1,waypoints[10]));
             waypoints[12].Ways.Add((1,waypoints[8]));
 
-            var wp = new WaypointDistance().FindWay(waypoints[0], waypoints[7]);
+            var wp = DijkstraAlgorithm.FindWay(waypoints[0], waypoints[7]);
             var res = new List<int>();
             var realResult = new int[] { 0, 10, 6, 1, 7 };
             foreach (var element in wp)
