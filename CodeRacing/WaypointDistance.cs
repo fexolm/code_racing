@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,6 +55,58 @@ namespace CodeRacing
             result.Add(p1);
             result.Reverse();
             return result;
+        }
+    }
+
+    public static class MapParser
+    {
+        private static IDictionary<(int x, int y), WaypointNode> _map;
+        private static WaypointNode GetNode(int x, int y)
+        {
+            if (!_map.ContainsKey((x, y)))
+            {
+                _map.Add((x, y), new WaypointNode());
+            }
+            return _map[(x, y)];
+        }
+        public static List<WaypointNode[]> GetWaypints(World world)
+        {
+            _map = new Dictionary<(int x, int y), WaypointNode>();
+            var map = world.TilesXY;
+            int xlen = map.Length;
+            int ylen = map[0].Length;
+
+            for (int i = 0; i < xlen; i++)
+            {
+                for (int j = 0; j < ylen; j++)
+                {
+                    switch (map[i][j])
+                    {
+                        case TileType.LeftTopCorner:
+                            GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                            break;
+                        case TileType.RightTopCorner:
+                            GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                            GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                            break;
+                        case TileType.LeftBottomCorner:
+                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                            GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                            break;
+                        case TileType.RightBottomCorner:
+                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                            break;
+                        case TileType.BottomHeadedT:
+                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                            break;
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }
