@@ -62,6 +62,10 @@
       <Project>{d0f84898-34e7-4ee9-88ab-9f2201095dc3}</Project>
       <Name>CodeRacing</Name>
     </ProjectReference>
+    <ProjectReference Include="..\csharp-cgdk\csharp-cgdk.csproj">
+      <Project>{9c830e12-33c9-429b-914e-bbdaa478d495}</Project>
+      <Name>csharp-cgdk</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
