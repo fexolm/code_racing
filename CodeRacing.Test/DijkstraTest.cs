@@ -62,5 +62,51 @@ namespace CodeRacing.Test
                 Assert.AreEqual(realResult[i], res[i]);
             }
         }
+
+        [Test]
+        public void Test2()
+        {
+            WaypointNode[] waypoints = new WaypointNode[8];
+            for (int i = 0; i < 8; i++)
+            {
+                waypoints[i] = new WaypointNode();
+            }
+            waypoints[1].Weight = 0;
+            waypoints[1].Ways.Add((2, waypoints[2]));
+            waypoints[2].Ways.Add((5, waypoints[3]));
+            waypoints[2].Ways.Add((2, waypoints[1]));
+            waypoints[2].Ways.Add((13, waypoints[5]));
+            waypoints[3].Ways.Add((5, waypoints[2]));
+            waypoints[3].Ways.Add((1, waypoints[4]));
+            waypoints[4].Ways.Add((1, waypoints[3]));
+            waypoints[4].Ways.Add((7, waypoints[5]));
+            waypoints[4].Ways.Add((6, waypoints[6]));
+            waypoints[5].Ways.Add((13, waypoints[2]));
+            waypoints[5].Ways.Add((5, waypoints[7]));
+            waypoints[5].Ways.Add((7, waypoints[4]));
+            waypoints[6].Ways.Add((6, waypoints[4]));
+            waypoints[6].Ways.Add((4, waypoints[7]));
+            waypoints[7].Ways.Add((5, waypoints[5]));
+            waypoints[7].Ways.Add((10, waypoints[0]));
+            waypoints[7].Ways.Add((4, waypoints[6]));
+            waypoints[0].Ways.Add((10, waypoints[7]));
+
+            var wp = DijkstraAlgorithm.FindWay(waypoints[1], waypoints[0]);
+            var res = new List<int>();
+            var realResult = new int[] { 1, 2, 3, 4, 6, 7, 0 };
+            foreach (var element in wp)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    if (waypoints[i] == element)
+                        res.Add(i);
+                }
+            }
+            Assert.AreEqual(realResult.Length, res.Count);
+            for (int i = 0; i < realResult.Length; i++)
+            {
+                Assert.AreEqual(realResult[i], res[i]);
+            }
+        }
     }
 }
