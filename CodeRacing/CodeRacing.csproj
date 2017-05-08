@@ -50,6 +50,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runner.cs" />
     <Compile Include="VisualClient.cs" />
+    <Compile Include="Visualizer.cs" />
     <Compile Include="WaypointDistance.cs" />
   </ItemGroup>
   <ItemGroup>
