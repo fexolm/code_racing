@@ -75,7 +75,7 @@ namespace CodeRacing
             }
             return _map[(x, y)];
         }
-        public static List<WaypointNode[]> GetWaypints(World world, Game game)
+        public static void InitMap(World world, Game game)
         {
             var map = world.TilesXY;
             int xlen = map.Length;
@@ -175,7 +175,7 @@ namespace CodeRacing
                 }
             }
 #endif
-            return null;
+           
         }
     }
 }
