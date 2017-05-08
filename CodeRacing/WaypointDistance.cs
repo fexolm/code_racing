@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿//#define DEBUG_GRAPH
 using Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk.Model;
 using System;
 using System.Collections.Generic;
@@ -48,6 +48,7 @@ namespace CodeRacing
         }
         public static List<WaypointNode> FindWay(WaypointNode p1, WaypointNode p2)
         {
+            p1.Weight = 0;
             CalcWeights(p1, p2);
             var result = new List<WaypointNode>();
             result.Add(p2);
@@ -73,6 +74,10 @@ namespace CodeRacing
             {
                 _map.Add((x, y), new WaypointNode(x, y));
             }
+            return _map[(x, y)];
+        }
+        public static WaypointNode GetWaypoint(int x, int y)
+        {
             return _map[(x, y)];
         }
         public static void InitMap(World world, Game game)
@@ -148,10 +153,10 @@ namespace CodeRacing
             {
                 foreach (var element in _map)
                 {
-                    element.Value.Weight = 1;
+                    element.Value.Weight = 9999999;
                 }
             }
-#if DEBUG
+#if DEBUG_GRAPH
             Random rnd = new Random();
             foreach (var element in _map)
             {
@@ -161,10 +166,10 @@ namespace CodeRacing
                 float green = (float)rnd.NextDouble();
                 float blue = (float)rnd.NextDouble();
 
-                Visualizer.Client.FillCircle(x, y, 20,red, green, blue);
+                Visualizer.Client.FillCircle(x, y, 20, red, green, blue);
                 foreach (var neighbour in element.Value.Ways)
                 {
-                    Visualizer.Client.Line(x + 25*(red + green + blue), y + 25 * (red + green + blue), neighbour.node.X * 800 + 400, neighbour.node.Y * 800 + 400, red, green, blue);
+                    Visualizer.Client.Line(x + 25 * (red + green + blue), y + 25 * (red + green + blue), neighbour.node.X * 800 + 400, neighbour.node.Y * 800 + 400, red, green, blue);
                 }
             }
             for (int i = 0; i < xlen; i++)
@@ -175,7 +180,6 @@ namespace CodeRacing
                 }
             }
 #endif
-           
         }
     }
 }

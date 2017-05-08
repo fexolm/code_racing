@@ -12,14 +12,23 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
         {
             Visualizer.Client.BeginPost();
             MapParser.InitMap(world, game);
-            double nextWaypointX = (car.NextWaypointX + 0.5D) * game.TrackTileSize;
-            double nextWaypointY = (car.NextWaypointY + 0.5D) * game.TrackTileSize;
+            var start = MapParser.GetWaypoint((int)(car.X / game.TrackTileSize), (int)(car.Y / game.TrackTileSize));
+            var finish = MapParser.GetWaypoint(car.NextWaypointX, car.NextWaypointY);
+            var way = DijkstraAlgorithm.FindWay(start, finish);
 
-            double angleToWaypoint = car.GetAngleTo(nextWaypointX, nextWaypointY);
+            foreach(var wp in way)
+            {
+                Visualizer.Client.FillCircle((wp.X + 0.5) * 800, (wp.Y + 0.5) * 800, 10);
+            }
+
+            double nextWaypointX = (way[1].X + 0.5D) * game.TrackTileSize;
+            double nextWaypointY = (way[1].Y + 0.5D) * game.TrackTileSize;
+
+            double angleToWaypoint = 2 * car.GetAngleTo(nextWaypointX, nextWaypointY);
             double speedModule = Math.Sqrt(car.SpeedX * car.SpeedX + car.SpeedY * car.SpeedY);
 
             move.WheelTurn = angleToWaypoint * 32.0D / Math.PI;
-            move.EnginePower = 0.75D;
+            move.EnginePower = 0.3D;
 
             if (speedModule * speedModule * Math.Abs(angleToWaypoint) > 2.5D * 2.5D * Math.PI)
             {
