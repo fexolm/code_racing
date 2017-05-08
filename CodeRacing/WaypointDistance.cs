@@ -1,4 +1,5 @@
-﻿using Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk.Model;
+﻿#define DEBUG
+using Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,11 @@ namespace CodeRacing
 {
     public class WaypointNode
     {
+        public WaypointNode(int x, int y) : this()
+        {
+            X = x;
+            Y = y;
+        }
         public WaypointNode()
         {
             Weight = 9999999;
@@ -16,8 +22,8 @@ namespace CodeRacing
         }
         public double Weight { get; set; }
         public List<(double weight, WaypointNode node)> Ways { get; set; }
-        public static readonly double FrontLen = 1;
-        public static readonly double TurnLen = Math.Sqrt(2);
+        public readonly int X;
+        public readonly int Y;
     }
 
     public static class DijkstraAlgorithm
@@ -65,47 +71,110 @@ namespace CodeRacing
         {
             if (!_map.ContainsKey((x, y)))
             {
-                _map.Add((x, y), new WaypointNode());
+                _map.Add((x, y), new WaypointNode(x, y));
             }
             return _map[(x, y)];
         }
-        public static List<WaypointNode[]> GetWaypints(World world)
+        public static List<WaypointNode[]> GetWaypints(World world, Game game)
         {
-            _map = new Dictionary<(int x, int y), WaypointNode>();
             var map = world.TilesXY;
             int xlen = map.Length;
             int ylen = map[0].Length;
+            if (_map == null)
+            {
+                _map = new Dictionary<(int x, int y), WaypointNode>();
+                for (int i = 0; i < xlen; i++)
+                {
+                    for (int j = 0; j < ylen; j++)
+                    {
+                        switch (map[i][j])
+                        {
+                            case TileType.LeftTopCorner:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                break;
+                            case TileType.RightTopCorner:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
+                            case TileType.LeftBottomCorner:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                break;
+                            case TileType.RightBottomCorner:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
+                            case TileType.BottomHeadedT:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
+                            case TileType.TopHeadedT:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
+                            case TileType.Crossroads:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                break;
+                            case TileType.Horizontal:
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
+                            case TileType.Vertical:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                break;
+                            case TileType.RightHeadedT:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
+                                break;
+                            case TileType.LeftHeadedT:
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
+                                GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
+                                break;
 
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var element in _map)
+                {
+                    element.Value.Weight = 1;
+                }
+            }
+#if DEBUG
+            Random rnd = new Random();
+            foreach (var element in _map)
+            {
+                var x = element.Key.x * 800 + 400;
+                var y = element.Key.y * 800 + 400;
+                float red = (float)rnd.NextDouble();
+                float green = (float)rnd.NextDouble();
+                float blue = (float)rnd.NextDouble();
+
+                Visualizer.Client.FillCircle(x, y, 20,red, green, blue);
+                foreach (var neighbour in element.Value.Ways)
+                {
+                    Visualizer.Client.Line(x + 25*(red + green + blue), y + 25 * (red + green + blue), neighbour.node.X * 800 + 400, neighbour.node.Y * 800 + 400, red, green, blue);
+                }
+            }
             for (int i = 0; i < xlen; i++)
             {
                 for (int j = 0; j < ylen; j++)
                 {
-                    switch (map[i][j])
-                    {
-                        case TileType.LeftTopCorner:
-                            GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
-                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
-                            break;
-                        case TileType.RightTopCorner:
-                            GetNode(i, j).Ways.Add((1, GetNode(i, j - 1)));
-                            GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
-                            break;
-                        case TileType.LeftBottomCorner:
-                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
-                            GetNode(i, j).Ways.Add((1, GetNode(i - 1, j)));
-                            break;
-                        case TileType.RightBottomCorner:
-                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
-                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
-                            break;
-                        case TileType.BottomHeadedT:
-                            GetNode(i, j).Ways.Add((1, GetNode(i, j + 1)));
-                            GetNode(i, j).Ways.Add((1, GetNode(i + 1, j)));
-                            break;
-                    }
+                    Visualizer.Client.Text(i * game.TrackTileSize + 400, j * game.TrackTileSize + 400, map[i][j].ToString());
                 }
             }
-
+#endif
             return null;
         }
     }
