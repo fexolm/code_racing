@@ -8,6 +8,7 @@ namespace CodeRacing
 {
     class Vector2
     {
+        private static readonly double epsilon = 1.0e-9;
         public double X;
         public double Y;
         public Vector2()
@@ -69,7 +70,8 @@ namespace CodeRacing
         }
         public static Vector2 sincos(double angle)
         {
-            return new Vector2(Math.Sin(angle), -Math.Cos(angle)).Normalize();
+            return new Vector2(Math.Abs(Math.Cos(angle)) < epsilon ? 0 : Math.Cos(angle),
+                               Math.Abs(Math.Sin(angle)) < epsilon ? 0 : Math.Sin(angle)).Normalize();
         }
     }
 }

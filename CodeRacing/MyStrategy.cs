@@ -8,6 +8,7 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
 {
     public sealed class MyStrategy : IStrategy
     {
+        static List<(double, double)> _carMoves = new List<(double, double)>();
         public void Move(Car car, World world, Game game, Move move)
         {
             Visualizer.Client.BeginPost();
@@ -24,10 +25,9 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
             double nextWaypointX = (way[1].X + 0.5D) * game.TrackTileSize;
             double nextWaypointY = (way[1].Y + 0.5D) * game.TrackTileSize;
 
-            double angleToWaypoint = 2 * car.GetAngleTo(nextWaypointX, nextWaypointY);
+            double angleToWaypoint = car.GetAngleTo(nextWaypointX, nextWaypointY);
             double speedModule = Math.Sqrt(car.SpeedX * car.SpeedX + car.SpeedY * car.SpeedY);
 
-            //move.WheelTurn = angleToWaypoint * 32.0D / Math.PI;
             move.EnginePower = 0;
 
             //if (speedModule * speedModule * Math.Abs(angleToWaypoint) > 2.5D * 2.5D * Math.PI)
@@ -36,25 +36,25 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
             //}
             if (world.Tick >= game.InitialFreezeDurationTicks)
             {
+                move.EnginePower = 1;
+                move.WheelTurn = angleToWaypoint * 32.0D / Math.PI;
                 PhysicsCar pcar = new PhysicsCar();
                 pcar.WheelTurn = 0;
                 pcar.EnginePower = 0;
                 pcar.Speed = new Vector2(0, 0);
-                //pcar.Position = new Vector2(car.X, car.Y);
-                pcar.Angle = car.Angle;
-                (double, double)[] param = new(double, double)[world.Tick - game.InitialFreezeDurationTicks + 1];
-                for (int i = 0; i <= world.Tick - game.InitialFreezeDurationTicks; i++)
-                {
-                    move.EnginePower = 1;
-                    param[i] = (0, 1);
-                }
-                var simulation = Physics.CalcStateRecursive(game, pcar, world.Tick - game.InitialFreezeDurationTicks + 1, param);
+                pcar.Angle = -Math.PI / 2;
+                pcar.Position = new Vector2(166, 2800);
+                _carMoves.Add((move.WheelTurn, move.EnginePower));
+                var simulation = Physics.CalcStateRecursive(game, pcar, world.Tick - game.InitialFreezeDurationTicks + 1, _carMoves.ToArray());
                 var simulationTick = simulation[world.Tick - game.InitialFreezeDurationTicks];
-                Console.WriteLine("{0} = {1} {2:0.00}={3:0.00} {4} = {5}",
-                    car.EnginePower, simulationTick.EnginePower,
-                    car.SpeedX, simulationTick.Speed.X,
-                    car.SpeedY, simulationTick.Speed.Y);
+                //Console.WriteLine("{0:0:00}= {1:0:00}         {2:0.00}={3:0.00}      {4:0.00}={5:0.00}, {6:0.00}={7:0.00}",
+                //    car.WheelTurn, simulationTick.WheelTurn,
+                //    car.SpeedX, simulationTick.Speed.X,
+                //    car.SpeedY, simulationTick.Speed.Y,
+                //    car.Angle,  simulationTick.Angle);
+                Console.WriteLine("tick {4:0000}:    {0:0.00}:{1:0.00}    {2:0.00}:{3:0.00}", car.X, car.Y, simulationTick.Position.X, simulationTick.Position.Y, world.Tick - game.InitialFreezeDurationTicks);
             }
+
             Visualizer.Client.EndPost();
         }
     }

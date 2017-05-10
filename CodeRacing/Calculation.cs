@@ -8,7 +8,7 @@ namespace CodeRacing
 {
     public static class Calculation
     {
-        public static double Limit(double a, double max)
+        public static double LimitChange(double a, double max)
         {
             if(Math.Abs(a) > max)
             {
@@ -18,6 +18,24 @@ namespace CodeRacing
             {
                 return a;
             }
+        }
+        public static double Limit(double v, double limit)
+        {
+            return Math.Max(-limit, Math.Min(v, limit));
+        }
+        public static double NormalizeAngle(double angle)
+        {
+            while (angle > Math.PI)
+            {
+                angle -= 2.0D * Math.PI;
+            }
+
+            while (angle < -Math.PI)
+            {
+                angle += 2.0D * Math.PI;
+            }
+
+            return angle;
         }
     }
 }
