@@ -20,7 +20,7 @@ namespace CodeRacing
     }
     static class Physics
     {
-        private static double dt = 1D;
+        private static double dt = 0.1D;
         public static List<PhysicsCar> CalcStateRecursive(Game game, PhysicsCar currentState, int tickNumber, (double wheelTurn, double enginePower)[] actions)
         {
             List<PhysicsCar> result = new List<PhysicsCar>();
@@ -51,29 +51,34 @@ namespace CodeRacing
 
             var direction = Vector2.sincos(angle).Normalize();
 
+            double baseAngleSpeed = wturn * game.CarAngularSpeedFactor * speed.Dot(direction);
+            angleSpeed -= baseAngleSpeed;
+
             wturn += Calculation.LimitChange(wheelTurn - wturn, game.CarWheelTurnChangePerTick);
             epower += Calculation.LimitChange(enginePower - epower, game.CarEnginePowerChangePerTick);
-            pos = pos + speed;
-            var acceleration = forwardPower / mass * epower * dt;
+            var acceleration = forwardPower / mass * epower;
             Vector2 accel = direction * acceleration;
 
-            speed = (speed + accel) * Math.Pow(1 - game.CarMovementAirFrictionFactor, dt);
-            double lengthSpeed = speed.Dot(direction);
-            double crossSpeed = speed.Cross(direction);
-            Vector2 lengthFriction = direction * Calculation.Limit(lengthSpeed, game.CarLengthwiseMovementFrictionFactor * dt);
-            Vector2 crossFriction = direction.PerpendicularLeft() * Calculation.Limit(crossSpeed, game.CarCrosswiseMovementFrictionFactor * dt);
-            speed -= lengthFriction + crossFriction;
+            baseAngleSpeed = wturn * game.CarAngularSpeedFactor * speed.Dot(direction);
+            angleSpeed += baseAngleSpeed;
 
-            var rotationAirFriction = 1 - game.CarRotationFrictionFactor;
-            angle = Calculation.NormalizeAngle(angle + angleSpeed);
+            for (int i = 0; i < 10; i++)
+            {
+                pos = pos + speed * dt;
+                speed = (speed + accel*dt) * Math.Pow(1 - game.CarMovementAirFrictionFactor, dt);
+                double lengthSpeed = speed.Dot(direction);
+                double crossSpeed = speed.Cross(direction);
+                Vector2 lengthFriction = direction * Calculation.Limit(lengthSpeed, game.CarLengthwiseMovementFrictionFactor * dt);
+                Vector2 crossFriction = direction.PerpendicularLeft() * Calculation.Limit(crossSpeed, game.CarCrosswiseMovementFrictionFactor * dt);
+                speed -= lengthFriction + crossFriction;
+                angle += angleSpeed * dt;
+                angle = Calculation.NormalizeAngle(angle);
 
-            double baseAngleSpeed = wturn * game.CarAngularSpeedFactor * speed.Dot(direction);
+                direction = Vector2.sincos(angle);
 
-            angle = angle + angleSpeed;
-            angle = Calculation.NormalizeAngle(angle);
-            angleSpeed = baseAngleSpeed + (angleSpeed - baseAngleSpeed) * Math.Pow(1 - game.CarRotationAirFrictionFactor, dt);
-            angleSpeed -= Calculation.Limit(angleSpeed - baseAngleSpeed, game.CarRotationFrictionFactor);
-
+                angleSpeed = baseAngleSpeed + (angleSpeed - baseAngleSpeed) * Math.Pow(1 - game.CarRotationAirFrictionFactor, dt);
+                angleSpeed -= Calculation.Limit(angleSpeed - baseAngleSpeed, game.CarRotationFrictionFactor * dt);
+            }
 
             result.Angle = angle;
             result.AngleSpeed = angleSpeed;

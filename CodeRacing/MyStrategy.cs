@@ -36,7 +36,7 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
             //}
             if (world.Tick >= game.InitialFreezeDurationTicks)
             {
-                move.EnginePower = 1;
+                move.EnginePower = 0.4D;
                 move.WheelTurn = angleToWaypoint * 32.0D / Math.PI;
                 PhysicsCar pcar = new PhysicsCar();
                 pcar.WheelTurn = 0;
@@ -51,7 +51,7 @@ namespace Com.CodeGame.CodeRacing2015.DevKit.CSharpCgdk
                 //    car.WheelTurn, simulationTick.WheelTurn,
                 //    car.SpeedX, simulationTick.Speed.X,
                 //    car.SpeedY, simulationTick.Speed.Y,
-                //    car.Angle,  simulationTick.Angle);
+                //    car.Angle, simulationTick.Angle);
                 Console.WriteLine("tick {4:0000}:    {0:0.00}:{1:0.00}    {2:0.00}:{3:0.00}", car.X, car.Y, simulationTick.Position.X, simulationTick.Position.Y, world.Tick - game.InitialFreezeDurationTicks);
             }
 
